@@ -9,6 +9,7 @@ class Promotion(models.Model):
 
 class Collection(models.Model):
     title = models.CharField(max_length=255)
+    featured_product = models.ForeignKey('Product', on_delete=models.SET_NULL, null=True, related_name='+')
 
 
 class Product(models.Model):
@@ -82,7 +83,7 @@ class Address(models.Model):
     # customer = models.OneToOneField(Customer, on_delete=models.SET_NULL, primary_key=True)
 
     # for the one to many relation the we have to add ForeginKey
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
 
 
 class Cart(models.Model):
