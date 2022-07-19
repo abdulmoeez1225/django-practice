@@ -2,6 +2,11 @@ from django.db import models
 
 
 # Create your models here.
+class Promotion(models.Model):
+    description = models.CharField(max_length=255)
+    discount = models.FloatField()
+
+
 class Collection(models.Model):
     title = models.CharField(max_length=255)
 
@@ -15,6 +20,10 @@ class Product(models.Model):
     last_update = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
     collection = models.ForeignKey('Collection', on_delete=models.PROTECT)
+    # by default, it will generate the product_set field in promotion table
+    # if you want to customize the name then you have to add the related_name
+    # promotions = models.ManyToManyField(Promotion, related_name='products')
+    promotions = models.ManyToManyField(Promotion)
 
 
 class Customer(models.Model):
