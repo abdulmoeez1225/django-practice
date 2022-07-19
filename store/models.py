@@ -2,6 +2,10 @@ from django.db import models
 
 
 # Create your models here.
+class Collection(models.Model):
+    title = models.CharField(max_length=255)
+
+
 class Product(models.Model):
     # sku = models.CharField(max_length=10,primary_key=True)
     title = models.CharField(max_length=225)
@@ -10,6 +14,7 @@ class Product(models.Model):
     inventory = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    collection = models.ForeignKey('Collection', on_delete=models.PROTECT)
 
 
 class Customer(models.Model):
@@ -41,6 +46,14 @@ class Order(models.Model):
     ]
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
+    Customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.PROTECT)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
+    quantity = models.PositiveSmallIntegerField()
+    uint_price = models.DecimalField(max_digits=6, decimal_places=2)
 
 
 class Address(models.Model):
@@ -48,8 +61,26 @@ class Address(models.Model):
     city = models.CharField(max_length=255)
     # IF WE DELETE THE CUSTOMER WHICH IS PARENT THERE CHILD MODEL FILE WILL BE ALSO DELETED
     # customer = models.OneToOneField(Customer, on_delete=models.CASCADE)
+
     # IF WE TRY TO DELETE THE CUSTOMER IT WILL NOT ALLOW US TO DELETE IT
     # WE SHOULD HAVE TO DELETE THEIR REFERENCE CHILD FIRST THEN DELETE THE PARENT
     # customer = models.OneToOneField(Customer, on_delete=models.PROTECT)
+
     # IF WE DELETE THE CUSTOMER WHICH IS PARENT THERE CHILD MODEL FIELD WILL BE SET TO NULL
-    customer = models.OneToOneField(Customer, on_delete=models.SET_NULL,primary_key=True)
+    # customer = models.OneToOneField(Customer, on_delete=models.SET_NULL,primary_key=True)
+
+    # IF WE WANT TO MAKE THE FIELD BY DEFAULT AS PRIMARY KEY THEN WE ADD primary_key
+    # customer = models.OneToOneField(Customer, on_delete=models.SET_NULL, primary_key=True)
+
+    # for the one to many relation the we have to add ForeginKey
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL)
+
+
+class Cart(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
